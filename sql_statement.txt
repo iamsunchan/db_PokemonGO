@@ -1,0 +1,218 @@
+//Pokemon List
+
+SELECT 
+	pkm_g.int_id, pkm_g.int_gen, pkm_g.txt_nameEN AS pkmName, pkm_g.txt_nameTC AS pkmNameTC, pkm_g.txt_nameSC AS pkmNameSC, pkm_g.txt_img_tb, 
+	(SELECT pkm_type.txt_nameEN FROM pkm_type WHERE pkm_g.int_typeA=pkm_type.int_id) AS TypeA, 
+	(SELECT pkm_type.txt_nameEN FROM pkm_type WHERE pkm_g.int_typeB=pkm_type.int_id) AS TypeB, 
+            			
+	pkm_g.int_atk, pkm_g.int_def, pkm_g.int_sta, pkm_g.int_maxCP, 
+
+	(SELECT pkm_candy.int_candy FROM pkm_candy WHERE pkm_candy.int_id=pkm_g.int_candy) AS EvloveCandy, 
+	(SELECT pkm_buddy.int_buddyKM FROM pkm_buddy WHERE pkm_buddy.int_id=pkm_g.int_buddyKM) AS BuddyKM, 
+	(SELECT pkm_egg.int_eggKM FROM pkm_egg WHERE pkm_egg.int_id=pkm_g.int_eggKM) AS EggKM, 
+
+	pkm_g.txt_rating, pkm_g.txt_rating_sort,
+	pkm_g.int_obtainability, pkm_g.int_legendary 
+	
+	FROM pkm_g
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Pokemon Details
+
+SELECT 
+	pkm_g.int_id, pkm_g.int_gen, pkm_g.txt_nameEN, pkm_g.txt_nameTC, pkm_g.txt_nameSC, pkm_g.txt_img_tb, pkm_g.txt_img, pkm_g.int_typeA, pkm_g.int_typeB, 
+			
+	(SELECT pkm_type.int_id FROM pkm_type WHERE pkm_g.int_typeA=pkm_type.int_id) AS TypeAID,
+	(SELECT pkm_type.txt_nameEN FROM pkm_type WHERE pkm_g.int_typeA=pkm_type.int_id) AS TypeA,
+	(SELECT pkm_type.txt_color FROM pkm_type WHERE pkm_g.int_typeA=pkm_type.int_id) AS TypeAColor,
+	(SELECT pkm_type.int_id FROM pkm_type WHERE pkm_g.int_typeB=pkm_type.int_id) AS TypeBID,
+	(SELECT pkm_type.txt_nameEN FROM pkm_type WHERE pkm_g.int_typeB=pkm_type.int_id) AS TypeB,
+	(SELECT pkm_type.txt_color FROM pkm_type WHERE pkm_g.int_typeB=pkm_type.int_id) AS TypeBColor,
+
+	(SELECT pkm_type.int_weather FROM pkm_type WHERE pkm_g.int_typeA=pkm_type.int_id) AS WeatherBoostAID,
+	(SELECT pkm_weather.txt_nameEN FROM pkm_weather 
+		INNER JOIN pkm_type ON pkm_type.int_weather=pkm_weather.int_id
+		WHERE pkm_g.int_typeA=pkm_type.int_id LIMIT 1) AS WeatherBoostA,
+
+	(SELECT pkm_type.int_weather FROM pkm_type WHERE pkm_g.int_typeB=pkm_type.int_id) AS WeatherBoostBID,
+	(SELECT pkm_weather.txt_nameEN FROM pkm_weather 
+		INNER JOIN pkm_type ON pkm_type.int_weather=pkm_weather.int_id
+		WHERE pkm_g.int_typeB=pkm_type.int_id LIMIT 1) AS WeatherBoostB,
+
+	pkm_g.dec_weight, pkm_g.dec_height, pkm_g.dec_captureRate, pkm_g.dec_fleeRate, 
+	pkm_g.int_atk, pkm_g.int_def, pkm_g.int_sta, 
+	pkm_g.int_maxCP, pkm_g.int_15maxCP, pkm_g.int_20maxCP, pkm_g.int_25maxCP, pkm_g.int_30maxCP, pkm_g.int_35maxCP,
+			
+	(SELECT pkm_egg.int_eggKM FROM pkm_egg WHERE pkm_g.int_eggKM=pkm_egg.int_id) AS Egg,
+	(SELECT pkm_buddy.int_buddyKM FROM pkm_buddy WHERE pkm_g.int_buddyKM=pkm_buddy.int_id) AS Buddy,
+			
+	pkm_g.txt_rating, pkm_g.txt_offenseTIER, pkm_g.txt_defenseTIER, 
+	pkm_g.int_obtainability, pkm_g.int_legendary 
+
+	FROM pkm_g WHERE pkm_g.int_id=[PKM ID]
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Pokemon Evolve Chart
+
+SELECT 
+	pkm_evolve.int_id, pkm_evolve.int_type,
+
+	pkm_evolve.int_e1 AS E1_ID, 
+	(SELECT pkm_g.txt_nameEN FROM pkm_g WHERE pkm_evolve.int_e1=pkm_g.int_id) AS E1_name,
+	(SELECT pkm_g.int_gen FROM pkm_g WHERE pkm_evolve.int_e1=pkm_g.int_id) AS E1_gen, 
+	(SELECT pkm_gen.txt_color FROM pkm_gen INNER JOIN pkm_g ON pkm_g.int_gen=pkm_gen.int_id WHERE pkm_evolve.int_e1=pkm_g.int_id LIMIT 1) AS E1_genColor,
+	(SELECT pkm_g.int_legendary FROM pkm_g WHERE pkm_evolve.int_e1=pkm_g.int_id) AS E1_legendary, 
+	(SELECT pkm_type.txt_nameEN FROM pkm_type INNER JOIN pkm_g ON pkm_type.int_id=pkm_g.int_typeA WHERE pkm_evolve.int_e1=pkm_g.int_id LIMIT 1) AS E1_typeA,
+	(SELECT pkm_type.txt_nameEN FROM pkm_type INNER JOIN pkm_g ON pkm_type.int_id=pkm_g.int_typeB WHERE pkm_evolve.int_e1=pkm_g.int_id LIMIT 1) AS E1_typeB,
+							
+	pkm_evolve.int_e2 AS E2_ID, 
+	(SELECT pkm_g.txt_nameEN FROM pkm_g WHERE pkm_evolve.int_e2=pkm_g.int_id) AS E2_name,
+	(SELECT pkm_g.int_gen FROM pkm_g WHERE pkm_evolve.int_e2=pkm_g.int_id) AS E2_gen, 
+	(SELECT pkm_gen.txt_color FROM pkm_gen INNER JOIN pkm_g ON pkm_g.int_gen=pkm_gen.int_id WHERE pkm_evolve.int_e2=pkm_g.int_id LIMIT 1) AS E2_genColor,
+	(SELECT pkm_g.int_legendary FROM pkm_g WHERE pkm_evolve.int_e2=pkm_g.int_id) AS E2_legendary, 
+	(SELECT pkm_type.txt_nameEN FROM pkm_type INNER JOIN pkm_g ON pkm_type.int_id=pkm_g.int_typeA WHERE pkm_evolve.int_e2=pkm_g.int_id LIMIT 1) AS E2_typeA,
+	(SELECT pkm_type.txt_nameEN FROM pkm_type INNER JOIN pkm_g ON pkm_type.int_id=pkm_g.int_typeB WHERE pkm_evolve.int_e2=pkm_g.int_id LIMIT 1) AS E2_typeB,
+							
+	pkm_evolve.int_e3 AS E3_ID, 
+	(SELECT pkm_g.txt_nameEN FROM pkm_g WHERE pkm_evolve.int_e3=pkm_g.int_id) AS E3_name,
+	(SELECT pkm_g.int_gen FROM pkm_g WHERE pkm_evolve.int_e3=pkm_g.int_id) AS E3_gen, 
+	(SELECT pkm_gen.txt_color FROM pkm_gen INNER JOIN pkm_g ON pkm_g.int_gen=pkm_gen.int_id WHERE pkm_evolve.int_e3=pkm_g.int_id LIMIT 1) AS E3_genColor,
+	(SELECT pkm_g.int_legendary FROM pkm_g WHERE pkm_evolve.int_e3=pkm_g.int_id) AS E3_legendary, 
+	(SELECT pkm_type.txt_nameEN FROM pkm_type INNER JOIN pkm_g ON pkm_type.int_id=pkm_g.int_typeA WHERE pkm_evolve.int_e3=pkm_g.int_id LIMIT 1) AS E3_typeA,
+	(SELECT pkm_type.txt_nameEN FROM pkm_type INNER JOIN pkm_g ON pkm_type.int_id=pkm_g.int_typeB WHERE pkm_evolve.int_e3=pkm_g.int_id LIMIT 1) AS E3_typeB
+							
+	FROM pkm_evolve INNER JOIN pkm_g 
+	GROUP BY pkm_evolve.int_id
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Move List
+
+SELECT 
+	pkm_moveALL.*, 
+	(SELECT pkm_type.txt_nameEN FROM pkm_type WHERE pkm_moveALL.int_type=pkm_type.int_id) AS MoveType, 
+	(SELECT pkm_type.txt_color FROM pkm_type WHERE pkm_moveALL.int_type=pkm_type.int_id) AS MoveColor						
+
+	FROM pkm_moveALL 
+	WHERE int_moveType=1 ORDER BY pkm_moveALL.int_type ASC, pkm_moveALL.dec_dmg DESC, pkm_moveALL.int_id ASC
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Move Details
+
+SELECT 
+	pkm_moveALL.*, 
+	pkm_type.int_id AS TypeID, 
+	pkm_type.txt_nameEN AS TypeName, 
+	pkm_type.txt_color AS TypeColor,
+	(SELECT pkm_weather.int_id FROM pkm_type INNER JOIN pkm_weather ON pkm_weather.int_id=pkm_type.int_weather INNER JOIN pkm_moveALL ON pkm_type.int_id=pkm_moveALL.int_type INNER JOIN pkm_moveList ON pkm_moveALL.int_id=$moveID LIMIT 1) AS WeatherID,
+	(SELECT pkm_weather.txt_nameEN FROM pkm_type INNER JOIN pkm_weather ON pkm_weather.int_id=pkm_type.int_weather INNER JOIN pkm_moveALL ON pkm_type.int_id=pkm_moveALL.int_type INNER JOIN pkm_moveList ON pkm_moveALL.int_id=$moveID LIMIT 1) AS Weather
+
+	FROM pkm_moveALL INNER JOIN pkm_type ON pkm_moveALL.int_type=pkm_type.int_id
+	WHERE pkm_moveALL.int_id=[Move ID]
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Moveset Details
+
+SELECT 
+	pkm_moveSet.*,
+
+	pkm_g.int_id AS pkmID, pkm_g.txt_nameEN AS pkmNameEN, pkm_g.txt_nameTC AS pkmNameTC, pkm_g.txt_nameSC AS pkmNameSC, 
+	pkm_g.txt_img, pkm_g.txt_img_tb,
+	pkm_g.int_typeA, pkm_g.int_typeB, 
+	pkm_g.int_atk, pkm_g.int_def, pkm_g.int_sta, 
+				
+	(SELECT pkm_type.txt_nameEN FROM pkm_type WHERE pkm_type.int_id=pkm_g.int_typeA) AS TypeAEN,
+	(SELECT pkm_type.txt_nameTC FROM pkm_type WHERE pkm_type.int_id=pkm_g.int_typeA) AS TypeATC,
+	(SELECT pkm_type.txt_nameSC FROM pkm_type WHERE pkm_type.int_id=pkm_g.int_typeA) AS TypeASC,
+	(SELECT pkm_type.txt_color FROM pkm_type WHERE pkm_type.int_id=pkm_g.int_typeA) AS TypeAColor,
+	(SELECT pkm_type.txt_nameEN FROM pkm_type WHERE pkm_type.int_id=pkm_g.int_typeB) AS TypeBEN,
+	(SELECT pkm_type.txt_nameTC FROM pkm_type WHERE pkm_type.int_id=pkm_g.int_typeB) AS TypeBTC,
+	(SELECT pkm_type.txt_nameSC FROM pkm_type WHERE pkm_type.int_id=pkm_g.int_typeB) AS TypeBSC,
+	(SELECT pkm_type.txt_color FROM pkm_type WHERE pkm_type.int_id=pkm_g.int_typeB) AS TypeBColor,
+				
+	(SELECT pkm_moveALL.txt_nameEN FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_qMove) AS qMoveEN,
+	(SELECT pkm_moveALL.txt_nameTC FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_qMove) AS qMoveTC,
+	(SELECT pkm_moveALL.txt_nameSC FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_qMove) AS qMoveSC,
+	(SELECT pkm_type.int_id FROM pkm_type INNER JOIN pkm_moveALL ON pkm_moveALL.int_type=pkm_type.int_id WHERE pkm_moveALL.int_id=$movesetQmove LIMIT 1) AS qMoveTypeID,
+	(SELECT pkm_type.txt_nameEN FROM pkm_type INNER JOIN pkm_moveALL ON pkm_moveALL.int_type=pkm_type.int_id WHERE pkm_moveALL.int_id=$movesetQmove LIMIT 1) AS qMoveTypeEN,
+	(SELECT pkm_type.txt_nameTC FROM pkm_type INNER JOIN pkm_moveALL ON pkm_moveALL.int_type=pkm_type.int_id WHERE pkm_moveALL.int_id=$movesetQmove LIMIT 1) AS qMoveTypeTC,
+	(SELECT pkm_type.txt_nameSC FROM pkm_type INNER JOIN pkm_moveALL ON pkm_moveALL.int_type=pkm_type.int_id WHERE pkm_moveALL.int_id=$movesetQmove LIMIT 1) AS qMoveTypeSC,
+	(SELECT pkm_type.txt_color FROM pkm_type INNER JOIN pkm_moveALL ON pkm_moveALL.int_type=pkm_type.int_id WHERE pkm_moveALL.int_id=$movesetQmove LIMIT 1) AS qMoveTypeColor,
+	(SELECT pkm_moveALL.dec_eps FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_qMove) AS qMoveEPS,
+	(SELECT pkm_moveALL.dec_cd FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_qMove) AS qMoveCD, 
+	(SELECT pkm_moveALL.dec_dmg FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_qMove) AS qMoveDMG, 
+	(SELECT pkm_moveALL.dec_eng FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_qMove) AS qMoveENG, 
+	(SELECT pkm_moveALL.dec_DPS FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_qMove) AS qMoveDPS, 
+	(SELECT pkm_moveALL.int_bar FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_qMove) AS qMoveBAR,
+				
+	(SELECT pkm_weather.int_id FROM pkm_type INNER JOIN pkm_weather ON pkm_weather.int_id=pkm_type.int_weather INNER JOIN pkm_moveALL ON pkm_type.int_id=pkm_moveALL.int_type WHERE pkm_moveALL.int_id=$movesetQmove LIMIT 1) AS qMoveWeatherID,
+	(SELECT pkm_weather.int_id FROM pkm_type INNER JOIN pkm_weather ON pkm_weather.int_id=pkm_type.int_weather INNER JOIN pkm_moveALL ON pkm_type.int_id=pkm_moveALL.int_type WHERE pkm_moveALL.int_id=$movesetQmove LIMIT 1) AS qMoveWeather,
+ 
+	(SELECT pkm_moveALL.txt_nameEN FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_cMove) AS cMoveEN,
+	(SELECT pkm_moveALL.txt_nameTC FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_cMove) AS cMoveTC,
+	(SELECT pkm_moveALL.txt_nameSC FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_cMove) AS cMoveSC,
+	(SELECT pkm_type.int_id FROM pkm_type INNER JOIN pkm_moveALL ON pkm_moveALL.int_type=pkm_type.int_id WHERE pkm_moveALL.int_id=$movesetCmove LIMIT 1) AS cMoveTypeID,
+	(SELECT pkm_type.txt_nameEN FROM pkm_type INNER JOIN pkm_moveALL ON pkm_moveALL.int_type=pkm_type.int_id WHERE pkm_moveALL.int_id=$movesetCmove LIMIT 1) AS cMoveTypeEN,
+	(SELECT pkm_type.txt_nameTC FROM pkm_type INNER JOIN pkm_moveALL ON pkm_moveALL.int_type=pkm_type.int_id WHERE pkm_moveALL.int_id=$movesetCmove LIMIT 1) AS cMoveTypeTC,
+	(SELECT pkm_type.txt_nameSC FROM pkm_type INNER JOIN pkm_moveALL ON pkm_moveALL.int_type=pkm_type.int_id WHERE pkm_moveALL.int_id=$movesetCmove LIMIT 1) AS cMoveTypeSC,
+	(SELECT pkm_type.txt_color FROM pkm_type INNER JOIN pkm_moveALL ON pkm_moveALL.int_type=pkm_type.int_id WHERE pkm_moveALL.int_id=$movesetCmove LIMIT 1) AS cMoveTypeColor,
+	(SELECT pkm_moveALL.dec_eps FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_cMove) AS cMoveEPS,
+	(SELECT pkm_moveALL.dec_cd FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_cMove) AS cMoveCD, 
+	(SELECT pkm_moveALL.dec_dmg FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_cMove) AS cMoveDMG, 
+	(SELECT pkm_moveALL.dec_eng FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_cMove) AS cMoveENG, 
+	(SELECT pkm_moveALL.dec_DPS FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_cMove) AS cMoveDPS, 
+	(SELECT pkm_moveALL.int_bar FROM pkm_moveALL WHERE pkm_moveALL.int_id=pkm_moveSet.int_cMove) AS cMoveBAR,
+				 
+	(SELECT pkm_weather.int_id FROM pkm_type INNER JOIN pkm_weather ON pkm_weather.int_id=pkm_type.int_weather INNER JOIN pkm_moveALL ON pkm_type.int_id=pkm_moveALL.int_type WHERE pkm_moveALL.int_id=$movesetCmove LIMIT 1) AS cMoveWeatherID,
+	(SELECT pkm_weather.int_id FROM pkm_type INNER JOIN pkm_weather ON pkm_weather.int_id=pkm_type.int_weather INNER JOIN pkm_moveALL ON pkm_type.int_id=pkm_moveALL.int_type WHERE pkm_moveALL.int_id=$movesetCmove LIMIT 1) AS cMoveWeather
+
+	FROM pkm_moveSet INNER JOIN pkm_g ON pkm_moveSet.int_pkmID=pkm_g.int_id
+	WHERE int_moveSetNo=$moveSetNo
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
